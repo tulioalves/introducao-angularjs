@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Unifenas</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.min.js" charset="utf-8"></script>
+    <script type="text/javascript">
+        (function() {
+            angular.module('app', []);
+            angular.module('app').controller('myController', myController);
+
+            function myController($scope, $http) {
+                $scope.users = [];
+                $scope.contUsers = 0;
+
+                getusers();
+
+                function getusers() {
+                    $http.get('https://api.github.com/users')
+                        .success(function(data) {
+                            angular.forEach(data, function(item) {
+                                $scope.users.push({
+                                    login: item.login,
+                                    checked: false
+                                });
+                            });
+                        });
+                };
+
+                $scope.verifyUser = function(checked) {
+                    $scope.contUsers += checked ? 1 : -1;
+                };
+            }
+        })();
+    </script>
+    <style>
+    .nopadding{
+        padding: 0;
+    }
+    </style>
+</head>
+
+<body ng-app='app'>
+    <div ng-controller="myController">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8 col-md-offset-2">
+                    <h1 class="text-center">Usuários - {{contUsers}} Usuário(s) checkado(s)</h1>
+                        <label class="col-md-4 nopadding" for="">Buscar: </label>
+                        <input type="text" class="form-control col-md-8" ng-model="search">
+                    <br />
+                    <div class="row">
+                        <div class="col-md-12">
+                            <ul class="list-group" style="max-height:450px; overflow-y: scroll;">
+                                <li class="list-group-item checkbox" ng-repeat="item in users | filter: search">
+                                    <label>
+                                        <input type="checkbox" ng-model="item.checked" ng-change="verifyUser(item.checked)" /> {{item.login}}</label>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
